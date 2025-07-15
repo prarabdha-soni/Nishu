@@ -23,6 +23,25 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage, user, on
         <ul className="space-y-1 sm:space-y-2">
           {menuItems.map((item) => {
             const Icon = item.icon;
+            // Only show Explore on mobile, show all on sm and up
+            if (item.id !== 'explore') {
+              return (
+                <li key={item.label} className="hidden sm:block">
+                  <button
+                    onClick={() => setCurrentPage(item.id)}
+                    className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
+                      currentPage === item.id
+                        ? 'bg-purple-50 text-purple-700 border-l-4 border-purple-600'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="font-medium">{item.label}</span>
+                  </button>
+                </li>
+              );
+            }
+            // Always show Explore
             return (
               <li key={item.label}>
                 <button
@@ -41,7 +60,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage, user, on
           })}
         </ul>
       </nav>
-      {/* User Profile at bottom */}
+      {/* User Profile at bottom (hidden on mobile) */}
       <div className="relative p-2 sm:p-4 pb-2 flex flex-col items-center hidden sm:flex">
         <button
           className="w-14 h-14 rounded-full overflow-hidden focus:outline-none"

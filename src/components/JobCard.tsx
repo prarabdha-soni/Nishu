@@ -60,29 +60,38 @@ const JobCard: React.FC<JobCardProps> = ({
       </div>
       {/* Right: Salary and Range */}
       <div className="flex flex-col items-end min-w-fit ml-6">
-        <div className="flex items-center space-x-1 sm:space-x-2 mt-0">
-          <button
-            className="flex items-center text-purple-600 font-semibold text-sm bg-white border border-purple-200 px-3 py-0.5 rounded-full shadow-sm hover:bg-purple-50 transition relative"
-            onClick={handleCopyReferral}
-            onMouseEnter={() => setShowTooltip(true)}
-            onMouseLeave={() => setShowTooltip(false)}
-            tabIndex={0}
-          >
-            <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 8V7a5 5 0 00-10 0v1M5 8h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2z"/></svg>
-            {salary}
-            {showTooltip && (
-              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-4 py-2 bg-gray-700 text-white text-sm rounded shadow-lg whitespace-normal break-words max-w-xs w-max z-10">
-                {copied ? 'Copied!' : `Earn ${salary} for a successful referral. Click to copy referral link`}
-              </span>
-            )}
-          </button>
-          <div className="text-xs sm:text-base text-black font-semibold whitespace-nowrap">
+        <button
+          className="flex items-center text-purple-600 font-semibold text-sm bg-white border border-purple-200 px-3 py-0.5 rounded-full shadow-sm hover:bg-purple-50 transition relative mb-1"
+          onClick={handleCopyReferral}
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+          tabIndex={0}
+        >
+          <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 8V7a5 5 0 00-10 0v1M5 8h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2z"/></svg>
+          {salary}
+          {showTooltip && (
+            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-4 py-2 bg-gray-700 text-white text-sm rounded shadow-lg whitespace-normal break-words max-w-xs w-max z-10">
+              {copied ? 'Copied!' : `Earn ${salary} for a successful referral. Click to copy referral link`}
+            </span>
+          )}
+        </button>
+        <div className="flex items-center space-x-1 sm:space-x-2">
+          <div className="text-xs sm:text-base text-black whitespace-nowrap">
             {salaryRange}
           </div>
+          {/* Desktop: show jobType inline */}
+          <div className="hidden sm:block">
+            {jobType && (
+              <div className={`text-xs sm:text-sm font-normal px-2 sm:px-3 py-0.5 rounded-full ${jobType === 'Full-time' ? 'bg-green-100 text-green-800 font-semibold inline-block' : 'text-black'}`}>{jobType}</div>
+            )}
+          </div>
         </div>
-        {jobType && (
-          <div className={`text-xs sm:text-sm font-normal mt-1 px-2 sm:px-3 py-0.5 rounded-full ${jobType === 'Full-time' ? 'bg-green-100 text-green-800 font-semibold inline-block' : 'text-black'}`}>{jobType}</div>
-        )}
+        {/* Mobile: show jobType below salary */}
+        <div className="block sm:hidden mt-1">
+          {jobType && (
+            <div className={`text-xs font-normal px-2 py-0.5 rounded-full ${jobType === 'Full-time' ? 'bg-green-100 text-green-800 font-semibold inline-block' : 'text-black'}`}>{jobType}</div>
+          )}
+        </div>
       </div>
     </div>
   );
