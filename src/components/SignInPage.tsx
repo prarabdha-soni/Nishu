@@ -54,24 +54,22 @@ const SignInPage: React.FC<SignInPageProps> = ({ onSignInSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-2 sm:px-4">
+      <div className="w-full max-w-sm sm:max-w-md">
         {/* Main Sign-in Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 relative">
+        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 relative">
           {/* Logo */}
-          <div className="flex justify-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
-              <span className="text-white font-bold text-2xl">M</span>
+          <div className="flex justify-center mb-6 sm:mb-8">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
+              <span className="text-white font-bold text-xl sm:text-2xl">M</span>
             </div>
           </div>
-
           {/* Title */}
-          <h1 className="text-2xl font-semibold text-gray-900 text-center mb-8">
+          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 text-center mb-6 sm:mb-8">
             Continue to Nishu
           </h1>
-
           {/* Email Form */}
-          <form onSubmit={handleEmailSubmit} className="space-y-6">
+          <form onSubmit={handleEmailSubmit} className="space-y-4 sm:space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email address
@@ -82,15 +80,14 @@ const SignInPage: React.FC<SignInPageProps> = ({ onSignInSuccess }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-colors"
+                className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-colors"
                 required
               />
             </div>
-
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
+              className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-medium py-2 sm:py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
             >
               {isLoading ? (
                 <div className="flex items-center space-x-2">
@@ -102,14 +99,12 @@ const SignInPage: React.FC<SignInPageProps> = ({ onSignInSuccess }) => {
               )}
             </button>
           </form>
-
           {/* Divider */}
-          <div className="my-6 flex items-center">
+          <div className="my-4 sm:my-6 flex items-center">
             <div className="flex-1 border-t border-gray-300"></div>
-            <span className="px-4 text-sm text-gray-500">Or continue with</span>
+            <span className="px-2 sm:px-4 text-xs sm:text-sm text-gray-500">Or continue with</span>
             <div className="flex-1 border-t border-gray-300"></div>
           </div>
-
           {/* Google Sign-in Button */}
           <button
             id="google-signin-button"

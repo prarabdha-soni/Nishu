@@ -18,9 +18,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage, user, on
   ];
   const [profileOpen, setProfileOpen] = React.useState(false);
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col justify-between overflow-hidden">
-      <nav className="p-4 flex-1 min-h-0 overflow-auto">
-        <ul className="space-y-2">
+    <aside className="w-full sm:w-64 bg-white border-r border-gray-200 h-auto sm:h-screen flex flex-col justify-between overflow-hidden">
+      <nav className="p-2 sm:p-4 flex-1 min-h-0 overflow-auto">
+        <ul className="space-y-1 sm:space-y-2">
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage, user, on
         </ul>
       </nav>
       {/* User Profile at bottom */}
-      <div className="relative p-4 pb-2 flex flex-col items-center">
+      <div className="relative p-2 sm:p-4 pb-2 flex flex-col items-center hidden sm:flex">
         <button
           className="w-14 h-14 rounded-full overflow-hidden focus:outline-none"
           onClick={() => setProfileOpen((v) => !v)}

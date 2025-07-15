@@ -38,7 +38,7 @@ const JobCard: React.FC<JobCardProps> = ({
       className="bg-white border border-gray-200 rounded-xl p-2 hover:shadow transition-shadow cursor-pointer w-full flex items-center justify-between mb-3"
     >
       {/* Left: Large faded logo */}
-      <div className="w-10 h-10 flex items-center justify-center mr-4 bg-gray-100 rounded-full overflow-hidden">
+      <div className="w-10 h-10 flex items-center justify-center mr-2 sm:mr-4 bg-gray-100 rounded-full overflow-hidden">
         {typeof logo === 'string' && (logo.endsWith('.png') || logo.endsWith('.jpg') || logo.endsWith('.jpeg') || logo.endsWith('.svg')) ? (
           <img src={logo} alt={company + ' logo'} className="w-full h-full object-contain" />
         ) : (
@@ -47,8 +47,8 @@ const JobCard: React.FC<JobCardProps> = ({
       </div>
       {/* Middle: Job Info */}
       <div className="flex-1 min-w-0">
-        <h3 className="text-lg font-normal text-black mb-1 truncate">{title}</h3>
-        <div className="flex items-center space-x-2 text-gray-500 text-sm font-medium">
+        <h3 className="text-base sm:text-lg font-normal text-black mb-1 truncate">{title}</h3>
+        <div className="flex items-center space-x-1 sm:space-x-2 text-gray-500 text-xs sm:text-sm font-medium">
           <span>{company}</span>
           {offerEquity && (
             <>
@@ -60,7 +60,7 @@ const JobCard: React.FC<JobCardProps> = ({
       </div>
       {/* Right: Salary and Range */}
       <div className="flex flex-col items-end min-w-fit ml-6">
-        <div className="flex items-center space-x-2 mt-0">
+        <div className="flex items-center space-x-1 sm:space-x-2 mt-0">
           <button
             className="flex items-center text-purple-600 font-semibold text-sm bg-white border border-purple-200 px-3 py-0.5 rounded-full shadow-sm hover:bg-purple-50 transition relative"
             onClick={handleCopyReferral}
@@ -76,12 +76,12 @@ const JobCard: React.FC<JobCardProps> = ({
               </span>
             )}
           </button>
-          <div className="text-base text-black font-semibold whitespace-nowrap">
+          <div className="text-xs sm:text-base text-black font-semibold whitespace-nowrap">
             {salaryRange}
           </div>
         </div>
         {jobType && (
-          <div className={`text-sm font-normal mt-1 px-3 py-0.5 rounded-full ${jobType === 'Full-time' ? 'bg-green-100 text-green-800 font-semibold inline-block' : 'text-black'}`}>{jobType}</div>
+          <div className={`text-xs sm:text-sm font-normal mt-1 px-2 sm:px-3 py-0.5 rounded-full ${jobType === 'Full-time' ? 'bg-green-100 text-green-800 font-semibold inline-block' : 'text-black'}`}>{jobType}</div>
         )}
       </div>
     </div>

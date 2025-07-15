@@ -81,7 +81,7 @@ function App() {
   return (
     <div className="h-screen bg-gray-50 overflow-hidden">
       <Header user={user} onSignOut={handleSignOut} />
-      <div className="flex h-[calc(100vh-64px)]">{/* 64px = header height */}
+      <div className="flex flex-col sm:flex-row h-[calc(100vh-64px)]">
         <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} user={user} onSignOut={handleSignOut} />
         <div className="flex-1 h-full overflow-auto">
           {renderContent()}
