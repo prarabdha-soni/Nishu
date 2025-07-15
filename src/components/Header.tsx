@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search, Plus, User, LogOut, Briefcase } from 'lucide-react';
+import openaiLogo from '../assets/openai.png';
 
 interface HeaderProps {
   user?: any;
@@ -12,9 +13,7 @@ const Header: React.FC<HeaderProps> = ({ user, onSignOut }) => {
       <div className="flex items-center justify-between">
         {/* Left: Logo and Nishu */}
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">J</span>
-          </div>
+          <img src={openaiLogo} alt="Logo" className="w-8 h-8 rounded-lg object-contain bg-white" />
           <h1 className="text-xl font-semibold text-gray-900">Nishu</h1>
         </div>
         {/* Center: Premium Jobs tagline */}
