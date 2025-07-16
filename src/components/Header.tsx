@@ -14,7 +14,7 @@ const Header: React.FC<HeaderProps> = ({ user, onSignOut }) => {
         {/* Left: Logo and Nishu */}
         <div className="flex items-center space-x-2 mb-2 sm:mb-0">
           <img src={openaiLogo} alt="Logo" className="w-8 h-8 rounded-lg object-contain bg-white" />
-          <h1 className="text-lg sm:text-xl font-semibold text-gray-900">Nishu</h1>
+          <h1 className="text-lg sm:text-xl font-semibold text-gray-900">JobX</h1>
         </div>
         {/* Center: Premium Jobs tagline */}
         <div className="flex-1 flex justify-center mb-2 sm:mb-0">
