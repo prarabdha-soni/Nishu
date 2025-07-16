@@ -1,74 +1,159 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
+import { OrbitControls } from '@react-three/drei';
+import * as THREE from 'three';
+// Add this at the very top for TypeScript PNG import support
+// @ts-ignore
+import interviewerAvatar from '../assets/model_1.png';
+// Remove interviewerAvatar import
 
 interface InterviewPageProps {
   job: any;
-  onBack: () => void;
 }
 
-const InterviewPage: React.FC<InterviewPageProps> = ({ job, onBack }) => {
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+
+async function fetchGpt4Response(messages: {role: string, content: string}[]) {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: 'gpt-4',
+      messages,
+      max_tokens: 300,
+      temperature: 0.7,
+    }),
+  });
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || '';
+}
+
+// Add this type declaration at the top (after imports)
+declare global {
+  interface ImportMetaEnv {
+    readonly VITE_OPENAI_API_KEY: string;
+  }
+  interface ImportMeta {
+    readonly env: ImportMetaEnv;
+  }
+}
+
+// Remove all three.js and 3D avatar code
+
+const InterviewPage: React.FC<InterviewPageProps> = ({ job }) => {
+  const [messages, setMessages] = useState([
+    { role: 'assistant', content: `Welcome to your interview! Let's begin. Please introduce yourself.` }
+  ]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const [isBlinking, setIsBlinking] = useState(false);
+  // Remove headAngle and head movement effect
+
+  // Blinking effect (slower)
+  React.useEffect(() => {
+    let blinkTimeout: number;
+    let blinkInterval: number;
+    function startBlinking() {
+      blinkInterval = setInterval(() => {
+        setIsBlinking(true);
+        blinkTimeout = setTimeout(() => setIsBlinking(false), 180); // eyelid down for 180ms
+      }, 5000 + Math.random() * 3000); // blink every 5-8s
+    }
+    startBlinking();
+    return () => {
+      clearInterval(blinkInterval);
+      clearTimeout(blinkTimeout);
+    };
+  }, []);
+
+  // Text-to-speech for bot replies
+  function speak(text: string) {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    const utter = new window.SpeechSynthesisUtterance(text);
+    // Prefer female Indian English voice
+    const voices = synth.getVoices();
+    // Try to find a female Indian English voice
+    const indianFemale = voices.find(v =>
+      v.lang && v.lang.toLowerCase().includes('en-in') && v.name.toLowerCase().includes('female')
+    ) || voices.find(v =>
+      v.lang && v.lang.toLowerCase().includes('en-in') && v.name.toLowerCase().includes('woman')
+    );
+    // Fallback to any female voice
+    const female = voices.find(v => v.name.toLowerCase().includes('female'));
+    if (indianFemale) utter.voice = indianFemale;
+    else if (female) utter.voice = female;
+    else if (voices[0]) utter.voice = voices[0];
+    utter.onstart = () => setIsSpeaking(true);
+    utter.onend = () => setIsSpeaking(false);
+    synth.speak(utter);
+  }
+
+  // Speak the latest AI message when it appears
+  React.useEffect(() => {
+    const last = messages[messages.length - 1];
+    if (last && last.role === 'assistant') {
+      speak(last.content);
+    }
+  }, [messages]);
+
+  // Send user answer to OpenAI and get next question
+  async function handleSend(e: React.FormEvent) {
+    e.preventDefault();
+    if (!input.trim()) return;
+    const newMessages = [...messages, { role: 'user', content: input }];
+    setMessages(newMessages);
+    setInput('');
+    setLoading(true);
+    // Compose prompt for OpenAI
+    const prompt = [
+      { role: 'system', content: 'You are a professional female interviewer. Ask the candidate a follow-up technical or behavioral question based on their last answer. Keep it conversational and relevant to a job interview.' },
+      ...newMessages
+    ];
+    const reply = await fetchGpt4Response(prompt);
+    setMessages([...newMessages, { role: 'assistant', content: reply }]);
+    setLoading(false);
+  }
+
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <div className="flex-1 flex flex-col lg:flex-row max-w-7xl mx-auto w-full pt-8">
-        {/* Left: Webcam and device settings */}
-        <div className="flex-1 flex flex-col items-center">
-          <h1 className="text-3xl font-bold mb-8 w-full text-left">{job?.title || 'xAI Operations Interview'}</h1>
-          <div className="w-full max-w-2xl aspect-video bg-black rounded-2xl flex flex-col items-center justify-center mb-6 relative">
-            <div className="flex flex-col items-center justify-center h-full w-full">
-              <svg className="w-16 h-16 text-white mb-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M4 6.5A2.5 2.5 0 016.5 4h11A2.5 2.5 0 0120 6.5v11a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17.5v-11z" /></svg>
-              <div className="text-white text-lg font-semibold mb-1">Camera permission required</div>
-              <div className="text-white text-sm">You must enable camera access before joining the AI interview.</div>
-            </div>
-            <button className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-red-500 text-white rounded-full p-3 shadow-lg">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M4 6.5A2.5 2.5 0 016.5 4h11A2.5 2.5 0 0120 6.5v11a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17.5v-11z" /></svg>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+      <div className="bg-white rounded-2xl shadow-lg border-4 border-purple-200 flex flex-col items-center p-8 w-full max-w-3xl" style={{ minHeight: 600 }}>
+        {/* LIVE badge */}
+        <div className="self-start mb-4 flex items-center bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow animate-pulse z-10">
+          <span className="w-2 h-2 bg-white rounded-full mr-2 animate-ping"></span>
+          LIVE
+        </div>
+        <div className="text-xl font-semibold text-purple-700 mb-4">AI Interviewer</div>
+        {/* Enlarged Chat UI */}
+        <div className="w-full bg-gray-50 rounded-lg border border-gray-200 p-6 flex flex-col gap-4 shadow" style={{ minHeight: 350, maxHeight: 500 }}>
+          <div className="flex-1 overflow-y-auto space-y-3 mb-2 max-h-80">
+            {messages.filter(m => m.role !== 'system').map((msg, idx) => (
+              <div key={idx} className={msg.role === 'assistant' ? 'text-left' : 'text-right'}>
+                <span className={msg.role === 'assistant' ? 'inline-block bg-white text-gray-900 px-4 py-2 rounded-lg shadow' : 'inline-block bg-purple-100 text-purple-900 px-4 py-2 rounded-lg shadow'}>
+                  {msg.content}
+                </span>
+              </div>
+            ))}
+            {loading && (
+              <div className="text-left text-gray-400">AI is typing...</div>
+            )}
+          </div>
+          <form onSubmit={handleSend} className="flex gap-2 items-center">
+            <input
+              className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-purple-500 outline-none text-lg"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              placeholder="Type your answer..."
+              disabled={loading}
+            />
+            <button type="submit" className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors text-lg font-semibold" disabled={loading || !input.trim()}>
+              Send
             </button>
-          </div>
-          {/* Device selectors */}
-          <div className="flex flex-wrap gap-4 w-full max-w-2xl mb-4 items-center">
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 1v22m6-6H6" /></svg>
-              <span className="text-sm">Microphone Array (Realtek)</span>
-              <span className="text-xs text-blue-600 underline cursor-pointer ml-2">Test your mic</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6a2 2 0 012-2h2a2 2 0 012 2v13" /></svg>
-              <span className="text-sm">Speakers (Realtek(R) A)</span>
-              <span className="text-xs text-blue-600 underline cursor-pointer ml-2">Play test sound</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M18 8a6 6 0 11-12 0 6 6 0 0112 0z" /></svg>
-              <span className="text-sm">Permission required</span>
-            </div>
-          </div>
-        </div>
-        {/* Right: Instructions and Start Interview */}
-        <div className="w-full lg:w-[400px] flex flex-col items-center lg:items-start px-0 lg:px-8 mt-8 lg:mt-0">
-          <h2 className="text-2xl font-bold mb-6 text-center lg:text-left">Get ready for your AI interview</h2>
-          <ul className="mb-6 space-y-3 w-full">
-            <li className="flex items-center gap-2 text-gray-700 text-base"><span className="text-purple-600">📅</span> Start now or come back later</li>
-            <li className="flex items-center gap-2 text-gray-700 text-base"><span className="text-purple-600">⏰</span> Expect to spend 30 minutes</li>
-            <li className="flex items-center gap-2 text-gray-700 text-base"><span className="text-purple-600">⚙️</span> Check your device settings</li>
-            <li className="flex items-center gap-2 text-gray-700 text-base"><span className="text-purple-600">🔇</span> Find a quiet place with stable internet</li>
-            <li className="flex items-center gap-2 text-gray-700 text-base"><span className="text-purple-600">🖥️</span> Test screen sharing permissions <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full ml-2">Test</span></li>
-          </ul>
-          <button className="w-full bg-purple-400 text-white text-lg font-semibold py-3 rounded-full mb-4 cursor-not-allowed" disabled>Start Interview</button>
-          <div className="flex gap-3 w-full justify-center lg:justify-start mb-4">
-            <button className="bg-white border border-gray-300 rounded-full px-5 py-2 text-base font-medium">FAQs</button>
-            <button className="bg-white border border-gray-300 rounded-full px-5 py-2 text-base font-medium">I'm having issues</button>
-          </div>
-          <div className="text-xs text-gray-500 w-full text-center lg:text-left">Mercor uses generative AI to conduct the AI interview. Your responses are used only to assess your candidacy and are never used to train AI models.</div>
-        </div>
-      </div>
-      {/* Progress bar and navigation */}
-      <div className="w-full px-4 py-3 bg-white border-t border-gray-200 flex items-center justify-between mt-4">
-        <div className="flex-1 flex items-center">
-          <div className="w-1/3 h-1.5 bg-purple-500 rounded-full" />
-          <div className="w-1/3 h-1.5 bg-gray-200 rounded-full mx-2" />
-          <div className="w-1/3 h-1.5 bg-gray-200 rounded-full" />
-        </div>
-        <div className="flex-1 flex justify-between text-sm font-medium text-gray-700 mt-2">
-          <span>Upload resume</span>
-          <span>Take interview</span>
-          <span>Complete application</span>
+          </form>
         </div>
       </div>
     </div>
