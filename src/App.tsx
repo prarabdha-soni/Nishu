@@ -8,30 +8,15 @@ import JobDetailsPage from './components/JobDetailsPage';
 import HomePage from './components/HomePage';
 import SignInPage from './components/SignInPage';
 import PreferencesPage from './components/PreferencesPage';
+import InterviewPage from './components/InterviewPage';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('explore');
   const [selectedJob, setSelectedJob] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
-
-  // Check for existing authentication on app load
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-      setIsAuthenticated(true);
-    }
-  }, []);
 
   const handleJobClick = (job: any) => {
-    if (isAuthenticated) {
-      setSelectedJob(job);
-      setCurrentPage('job-details');
-    } else {
-      setSelectedJob(job);
-      setCurrentPage('signin');
-    }
+    setSelectedJob(job);
+    setCurrentPage('job-details');
   };
 
   const handleBackToJobs = () => {
@@ -39,32 +24,20 @@ function App() {
     setCurrentPage('explore');
   };
 
-  const handleSignInSuccess = () => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setIsAuthenticated(true);
-    setCurrentPage('job-details');
-  };
-
-  const handleSignOut = () => {
-    localStorage.removeItem('user');
-    setUser(null);
-    setIsAuthenticated(false);
-    setCurrentPage('explore');
+  const handleApply = () => {
+    setCurrentPage('interview');
   };
 
   const renderContent = () => {
     switch (currentPage) {
-      case 'signin':
-        return <SignInPage onSignInSuccess={handleSignInSuccess} />;
       case 'job-details':
-        return <JobDetailsPage onBack={handleBackToJobs} />;
+        return <JobDetailsPage job={selectedJob} onBack={handleBackToJobs} onApply={handleApply} />;
+      case 'interview':
+        return <InterviewPage job={selectedJob} onBack={handleBackToJobs} />;
       case 'referrals':
         return <ReferralsPage />;
       case 'home':
-        return <HomePage user={user} />;
+        return <HomePage user={null} />;
       case 'preferences':
         return <PreferencesPage />;
       case 'explore':
@@ -80,9 +53,9 @@ function App() {
 
   return (
     <div className="h-screen bg-gray-50 overflow-hidden">
-      <Header user={user} onSignOut={handleSignOut} />
+      <Header />
       <div className="flex flex-col sm:flex-row h-[calc(100vh-64px)]">
-        <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} user={user} onSignOut={handleSignOut} />
+        <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
         <div className="flex-1 h-full overflow-auto">
           {renderContent()}
         </div>
